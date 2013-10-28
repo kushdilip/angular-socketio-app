@@ -1,0 +1,20 @@
+<div>
+        <table class="table">
+          <thead>
+            <tr  >
+              <th>Product</th>
+              <th>Best Buy Price</th>
+              <th>Best Sell Price</th>
+              <th>Last Traded Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="stock in stocks">
+              <td>{{stock.Product}}</td>
+              <td>{{stock.BBP}}</td>
+              <td>{{stock.BSP}}</td>
+              <td>{{stock.LTP}}</td>
+            </tr>
+          </tbody>
+        </table>
+  </div>

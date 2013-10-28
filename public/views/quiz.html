@@ -1,0 +1,25 @@
+<div class="container">
+	<span>Question: {{quiz.Question}}</span>
+	<ul class="unstyled">
+		<li>
+			<input type="checkbox" ng-model="quiz.Answers[0].usrResponse">
+			<span>{{quiz.Answers[0].Opt1}}</span>
+		</li>
+		<li>
+			<input type="checkbox" ng-model="quiz.Answers[1].usrResponse">
+			<span>{{quiz.Answers[1].Opt2}}</span>
+		</li>
+		<li>
+			<input type="checkbox" ng-model="quiz.Answers[2].usrResponse">
+			<span>{{quiz.Answers[2].Opt3}}</span>
+		</li>
+		<li>
+			<input type="checkbox" ng-model="quiz.Answers[3].usrResponse">
+			<span>{{quiz.Answers[3].Opt4}}</span>
+		</li>
+	</ul>
+	
+	<button class="btn-primary" ng-click="check_answer()">Answer</button>
+	<p>{{counter}}</p>
+
+</div>
