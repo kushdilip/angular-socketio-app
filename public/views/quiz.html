@@ -1,5 +1,5 @@
 <div class="container">
-	<span>Question: {{quiz.Question}}</span>
+	<span>Question: <span ng-bind="quiz.Question || 'No Question'"></span></span>
 	<ul class="unstyled">
 		<li>
 			<input type="checkbox" ng-model="quiz.Answers[0].usrResponse">

@@ -1,0 +1,15 @@
+<div class="register" ng-controller="RegisterCtrl">
+	<form name="registerForm" ng-submit="register()">
+
+		<div class="controls controls-row">
+
+			<input type="text" id="empId" name="empId" required="true" autofocus value="" ng-model="player.empId" placeHolder="Enter your EmployeeId" />
+			
+			<input class="btn btn-primary" type="submit" value="Register" ng-disabled="registerForm.$invalid" />
+			
+			</br>
+			<span ng-show="registerForm.empId.$invalid" class="help-inline">EmpId is required</span>
+		</div>
+	</form>
+
+</div>

@@ -33,11 +33,17 @@ if ('development' == app.get('env')) {
 server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
+//Data variables
+var players = [{empId: 'abc'}, {empId: 'dilip'}];
+
 app.get('/', function(req, res){
     res.sendFile('index.html');
 });
 
 
+app.get('/players', function (req, res) {
+    res.send(players);
+});
 
 server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
@@ -103,12 +109,20 @@ io.sockets.on('connection', function(socket){
 		msgWrite = msgWrite + data.letter;
     });
 
+    //Welcome test
     socket.emit('welcome', 'welcome to Tech-connect');
 
+    //listener for starting a quiz.
     socket.on('startQuiz', function (data) {
     	var serverjsonstr = JSON.stringify(quizes1[0]);
     	console.log(serverjsonstr);
     	socket.broadcast.emit('quiz', serverjsonstr);
-    })
-});
+    });
 
+    //New player registered
+    socket.on('register', function (data) {
+        players.push(data);
+        console.log(players.length);
+        socket.broadcast.emit('register', data);
+    });
+});

@@ -4,6 +4,11 @@ body {
   padding-top: 20px;
 }
 
+.register {
+  position: absolute;
+  right: 5px;
+}
+
 .users {
   list-style: none;
 }

@@ -1,0 +1,17 @@
+<div class="container">
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+			<th>Current Players</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="player in players" ng-class-even="'success'">
+				<td>
+					{{player.empId}}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+</div>

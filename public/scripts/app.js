@@ -3,7 +3,7 @@
 //var myApp = angular.module('myApp', []);
 
 /* App Module */
-var app = angular.module('app', []);
+var app = angular.module('app', ['ngResource']);
 
 app.config(['$routeProvider',
 	function($routeProvider) {
@@ -20,13 +20,73 @@ app.config(['$routeProvider',
                 templateUrl: 'views/master.html', 
                 controller: 'MasterCtrl'
             })
-			.otherwise({
-				redirectTo: '/quiz'
+			.when('/home', {
+                templateUrl: 'views/home.html',
+                controller: 'HomeCtrl'
+            })
+            .when('/monitor', {
+                templateUrl: 'views/monitor.html',
+                controller: 'MonitorCtrl'
+            })
+            .otherwise({
+				redirectTo: '/home'
 			});
 	}
 ]);
 
+
 /* Controllers */
+app.controller('MonitorCtrl',['$scope', 'socket','MyDataService', 
+ function ($scope, socket, MyDataService) {
+//    $scope.players = [{empId: 'abc'}, {empId: 'def'}];
+     
+     MyDataService.getPlayers(function (data) {
+         console.log(data);
+         $scope.players = data;
+     });
+
+    socket.on('register', function (data) {
+        // console.log(data);
+        $scope.players.push(data)
+    })  
+}]);
+
+app.factory("MyDataService", function ($resource, $http) {
+    return {
+        getPlayers: function (onSuccess) {
+            $http.get('http://localhost:3000/players')
+            .then(function (result) {
+                onSuccess(result.data);
+            });
+            // var players = $resource("http://localhost:3000/players", {}, { get : { method: 'JSON'}});
+            // players.get(function (response) {
+            //     alert("Hello");
+            //     console.log("Inside Service " + response);
+            //     //onSuccess(response.data);
+            //     //onSuccess(response.data);
+            // });
+        
+        }
+    };
+});
+
+
+app.controller('RegisterCtrl',['$scope', 'socket', 
+ function ($scope, socket) {
+
+    $scope.register = function () {
+        // body...
+        var player = $scope.player;
+        console.log(player);
+
+        socket.emit('register', player);
+    }
+      
+}]);
+
+app.controller('HomeCtrl', function ($scope) {
+        
+});
 
 app.controller('StockListCtrl', function ($scope, socket) { 
   $scope.stocks = [];
@@ -47,6 +107,7 @@ app.controller('MasterCtrl', function ($scope, socket) {
 app.controller('QuizController',['$scope','$timeout', 'socket', 
     function ($scope, $timeout, socket) {
 	
+
 
 
     socket.on('quiz', function (data) {
