@@ -1,0 +1,53 @@
+[
+    {
+        "Question": "53rd is a?",
+        "Answers": [
+            {
+                "Opt1": "Football Team.",
+                "correct": false,
+                "usrResponse": false
+            },
+            {
+                "Opt2": "Bank",
+                "correct": true,
+                "usrResponse": false
+            },
+            {
+                "Opt3": "Game",
+                "correct": false,
+                "usrResponse": false
+            },
+            {
+                "Opt4": "FoodChain",
+                "correct": false,
+                "usrResponse": false
+            }
+        ]
+    },
+
+    {
+        "Question": "Full form of DFC?",
+        "Answers": [
+            {
+                "Opt1": "Design For Change",
+                "correct": false,
+                "usrResponse": false
+            },
+            {
+                "Opt2": "Delhi Financial Corporation",
+                "correct": false,
+                "usrResponse": false
+            },
+            {
+                "Opt3": "Dollar Financial Corporation",
+                "correct": true,
+                "usrResponse": false
+            },
+            {
+                "Opt4": "Dedicated Freight Corridor",
+                "correct": false,
+                "usrResponse": false
+            }
+        ]
+    }
+]

@@ -3,11 +3,12 @@
  * Module dependencies.
  */
 
-var express = require('express');
+ var express = require('express');
 // var routes = require('./routes');
 // var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
+var fs = require('fs');
 
 var app = express();
 
@@ -34,7 +35,9 @@ server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
 //Data variables
-var players = [{empId: 'abc'}, {empId: 'dilip'}];
+var playersFile = __dirname + '/data/players.json';
+var questionFile = __dirname + '/data/questions.json';
+//var players = [{empId: 'default1'}, {empId: 'default2'}];
 
 app.get('/', function(req, res){
     res.sendFile('index.html');
@@ -42,7 +45,16 @@ app.get('/', function(req, res){
 
 
 app.get('/players', function (req, res) {
-    res.send(players);
+    fs.readFile(playersFile, 'utf8', function (err, players) {
+        if (err) {
+            console.log('Error: ' + err);
+            return;
+        }
+
+        players = JSON.parse(players);
+        res.contentType('application/json');
+        res.send(players);
+    });
 });
 
 server.listen(app.get('port'), function(){
@@ -58,11 +70,11 @@ var msgWrite = '';
 io.set('log level', 1);
 
 var serverjson = [
-                 {"Product": "REL", "BBP": "10", "BSP": "10.2", "LTP": "10.1" }, 
-				 {"Product": "BEL", "BBP": "20", "BSP": "20.4", "LTP": "20"    }, 
-				 {"Product": "MTL", "BBP": "50", "BSP": "50.5", "LTP": "50.1"  }, 
-				 {"Product": "BSL", "BBP": "100", "BSP": "101", "LTP": "100.2" }
-				 ];
+{"Product": "REL", "BBP": "10", "BSP": "10.2", "LTP": "10.1" }, 
+{"Product": "BEL", "BBP": "20", "BSP": "20.4", "LTP": "20"    }, 
+{"Product": "MTL", "BBP": "50", "BSP": "50.5", "LTP": "50.1"  }, 
+{"Product": "BSL", "BBP": "100", "BSP": "101", "LTP": "100.2" }
+];
 
 var quizes = [{
     "Question": "What is your name ?",
@@ -74,13 +86,14 @@ var quizes = [{
     }
 }];
 
-var quizes1 = [{
+var quizes1 = [
+{
     "Question": "What is your name ?",
     "Answers": [
-        {"Opt1": "Option1", "correct": false, "usrResponse":false},
-        {"Opt2": "Option2", "correct": false, "usrResponse":false},
-        {"Opt3": "Option3", "correct": false, "usrResponse":false},
-        {"Opt4": "Option4", "correct": true,  "usrResponse":false}
+    {"Opt1": "Option1", "correct": false, "usrResponse":false},
+    {"Opt2": "Option2", "correct": false, "usrResponse":false},
+    {"Opt3": "Option3", "correct": false, "usrResponse":false},
+    {"Opt4": "Option4", "correct": true,  "usrResponse":false}
     ]
 }];
 
@@ -89,24 +102,24 @@ var quizes1 = [{
 io.sockets.on('connection', function(socket){
     //send data to client
     setInterval(function(){
-        
-		for(i=0;i<serverjson.length;i++)
-		{
-			serverjson[i].BBP = Math.round((parseInt(serverjson[i].BBP) + Math.random())*100)/100;
-			serverjson[i].BSP = Math.round((parseInt(serverjson[i].BSP) + Math.random())*100)/100;
-			serverjson[i].LTP = Math.round((parseInt(serverjson[i].LTP) + Math.random())*100)/100;
-		}
-		
-		var serverjsonstr = JSON.stringify(serverjson);
-		
-		socket.emit('msg', {'msg': serverjsonstr});
-		socket.emit('msgWrite', msgWrite);
-    }, 1000);
+
+      for(i=0;i<serverjson.length;i++)
+      {
+       serverjson[i].BBP = Math.round((parseInt(serverjson[i].BBP) + Math.random())*100)/100;
+       serverjson[i].BSP = Math.round((parseInt(serverjson[i].BSP) + Math.random())*100)/100;
+       serverjson[i].LTP = Math.round((parseInt(serverjson[i].LTP) + Math.random())*100)/100;
+   }
+
+   var serverjsonstr = JSON.stringify(serverjson);
+
+   socket.emit('msg', {'msg': serverjsonstr});
+   socket.emit('msgWrite', msgWrite);
+}, 1000);
 
     //recieve client data
     socket.on('client_data', function(data){
         process.stdout.write(data.letter);
-		msgWrite = msgWrite + data.letter;
+        msgWrite = msgWrite + data.letter;
     });
 
     //Welcome test
@@ -114,15 +127,66 @@ io.sockets.on('connection', function(socket){
 
     //listener for starting a quiz.
     socket.on('startQuiz', function (data) {
-    	var serverjsonstr = JSON.stringify(quizes1[0]);
-    	console.log(serverjsonstr);
-    	socket.broadcast.emit('quiz', serverjsonstr);
+        fs.readFile(questionFile, 'utf8', function (err, questions) {
+            if (err) {
+                console.log('Error: ' + err);
+                return;
+            }
+            console.log(questions);
+            var questions = JSON.parse(questions);
+            
+            var serverjsonstr = JSON.stringify(questions[0]);
+                console.log(serverjsonstr);
+                socket.broadcast.emit('quiz', serverjsonstr);   
+
+                //Loop through all questions and emit.
+            // for (var i = 0; i < questions.length; i++) {
+            //     var serverjsonstr = JSON.stringify(questions[i]);
+            //     console.log(serverjsonstr);
+            //     socket.broadcast.emit('quiz', serverjsonstr);   
+            // };           
+        });
     });
 
     //New player registered
-    socket.on('register', function (data) {
-        players.push(data);
-        console.log(players.length);
-        socket.broadcast.emit('register', data);
+    socket.on('register', function (newPlayer) {
+        //players.push(data);
+        var players = [];
+        fs.readFile(playersFile, 'utf8', function (err, oldPlayers) {
+            if (err) {
+                console.log('Error: ' + err);
+                return;
+
+            }
+
+            
+            players = JSON.parse(oldPlayers);
+            
+            filteredPlayer = players.filter(function(player){
+              return (player.empId == newPlayer.empId);
+          }).length <= 0;
+
+            if (filteredPlayer) {
+                players.push(newPlayer);
+                writeToPlayersFile(players, newPlayer);
+            }            
+        });
+
     });
+
+    //function to write to players.json file
+    var writeToPlayersFile = function (players, newPlayer) {
+        fs.writeFile(playersFile, JSON.stringify(players, null, 4), 'utf8', function (err) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("New players list generated");
+                socket.broadcast.emit('register', newPlayer);
+
+            }
+        });
+    };
+
+    // var tempData = [];
+    // writeToPlayersFile(tempData);
 });
