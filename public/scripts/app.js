@@ -106,9 +106,10 @@ app.controller('MasterCtrl', function ($scope, socket) {
 
 app.controller('QuizController',['$scope','$timeout', 'socket', 
     function ($scope, $timeout, socket) {
-
         socket.on('quiz', function (data) {
-            $scope.quiz = (JSON.parse(data));
+            $scope.quiz = (JSON.parse(data));   
+            console.log('Question Came ' + $scope.quiz.Question);
+
             
             $scope.counter = 5;
             $scope.onTimeout = function(){

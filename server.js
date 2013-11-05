@@ -21,6 +21,8 @@ app.set('port', process.env.PORT || 3000);
 // app.use(express.bodyParser());
 // app.use(express.methodOverride());
 // app.use(app.router);
+app.use(express.cookieParser());
+app.use(express.session({secret: '1234567890QWERTY'}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // development only
@@ -76,28 +78,6 @@ var serverjson = [
 {"Product": "BSL", "BBP": "100", "BSP": "101", "LTP": "100.2" }
 ];
 
-var quizes = [{
-    "Question": "What is your name ?",
-    "Answers": {
-        "Opt1": "Option1",
-        "Opt2": "Option2",
-        "Opt3": "Option3",
-        "Opt4": "Option4"
-    }
-}];
-
-var quizes1 = [
-{
-    "Question": "What is your name ?",
-    "Answers": [
-    {"Opt1": "Option1", "correct": false, "usrResponse":false},
-    {"Opt2": "Option2", "correct": false, "usrResponse":false},
-    {"Opt3": "Option3", "correct": false, "usrResponse":false},
-    {"Opt4": "Option4", "correct": true,  "usrResponse":false}
-    ]
-}];
-
-
 // define interactions with client
 io.sockets.on('connection', function(socket){
     //send data to client
@@ -132,19 +112,21 @@ io.sockets.on('connection', function(socket){
                 console.log('Error: ' + err);
                 return;
             }
-            console.log(questions);
+
             var questions = JSON.parse(questions);
             
-            var serverjsonstr = JSON.stringify(questions[0]);
-                console.log(serverjsonstr);
-                socket.broadcast.emit('quiz', serverjsonstr);   
+            socket.broadcast.emit('quiz', JSON.stringify(questions[0]));   
 
-                //Loop through all questions and emit.
-            // for (var i = 0; i < questions.length; i++) {
-            //     var serverjsonstr = JSON.stringify(questions[i]);
-            //     console.log(serverjsonstr);
-            //     socket.broadcast.emit('quiz', serverjsonstr);   
-            // };           
+            var questionsCount = questions.length -1;
+            var i = 1;
+            if(questionsCount > 0){
+                var interval = setInterval(function () {
+                    var serverjsonstr = JSON.stringify(questions[i]);
+                    socket.broadcast.emit('quiz', JSON.stringify(questions[i]));
+                    i++, questionsCount--;
+                    if (questionsCount == 0) { clearInterval(interval);};
+                }, 7000 );
+            }
         });
     });
 

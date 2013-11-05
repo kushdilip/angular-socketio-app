@@ -49,5 +49,30 @@
                 "usrResponse": false
             }
         ]
+    },
+    {
+        "Question": "Cosumer Lending is related to?",
+        "Answers": [
+            {
+                "Opt1": "Gaming",
+                "correct": false,
+                "usrResponse": false
+            },
+            {
+                "Opt2": "Database",
+                "correct": false,
+                "usrResponse": false
+            },
+            {
+                "Opt3": "Mortgage",
+                "correct": true,
+                "usrResponse": false
+            },
+            {
+                "Opt4": "flight maintainence",
+                "correct": false,
+                "usrResponse": false
+            }
+        ]
     }
 ]
